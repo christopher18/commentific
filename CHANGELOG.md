@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.1] - 2024-01-XX
 
 ### Fixed
-- **Critical**: Fixed module name from `github.com/commentific/commentific` to `github.com/christopher18/commentific`
+- **Critical**: Fixed module name from `github.com/christopher18/commentific` to `github.com/christopher18/commentific`
 - Updated all import statements across the entire codebase
 - Ensures proper Go module resolution and pkg.go.dev indexing
 

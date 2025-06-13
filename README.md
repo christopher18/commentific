@@ -50,7 +50,7 @@ Open http://localhost:8080/ in your browser to see the interactive API documenta
 ### As a Go Module
 
 ```bash
-go get github.com/commentific/commentific
+go get github.com/christopher18/commentific
 ```
 
 ```go
@@ -60,9 +60,9 @@ import (
     "context"
     "log"
     
-    "github.com/commentific/commentific/internal/models"
-    "github.com/commentific/commentific/internal/repository/postgres"
-    "github.com/commentific/commentific/internal/service"
+    "github.com/christopher18/commentific/internal/models"
+    "github.com/christopher18/commentific/internal/repository/postgres"
+    "github.com/christopher18/commentific/internal/service"
     "github.com/jmoiron/sqlx"
 )
 
@@ -220,7 +220,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ```go
 import (
     "github.com/gin-gonic/gin"
-    "github.com/commentific/commentific/internal/service"
+    "github.com/christopher18/commentific/internal/service"
 )
 
 func setupCommentRoutes(r *gin.Engine, commentService *service.CommentService) {
@@ -252,7 +252,7 @@ func setupCommentRoutes(r *gin.Engine, commentService *service.CommentService) {
 ```go
 import (
     "github.com/labstack/echo/v4"
-    "github.com/commentific/commentific/internal/service"
+    "github.com/christopher18/commentific/internal/service"
 )
 
 func createComment(commentService *service.CommentService) echo.HandlerFunc {
@@ -324,7 +324,7 @@ go tool cover -html=coverage.out
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/commentific/commentific.git
+git clone https://github.com/christopher18/commentific.git
 cd commentific
 ```
 
@@ -379,9 +379,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📞 Support
 
-- 📚 [Documentation](https://github.com/commentific/commentific/wiki)
-- 🐛 [Issue Tracker](https://github.com/commentific/commentific/issues)
-- 💬 [Discussions](https://github.com/commentific/commentific/discussions)
+- 📚 [Documentation](https://github.com/christopher18/commentific/wiki)
+- 🐛 [Issue Tracker](https://github.com/christopher18/commentific/issues)
+- 💬 [Discussions](https://github.com/christopher18/commentific/discussions)
 
 ## 🗺 Roadmap
 
