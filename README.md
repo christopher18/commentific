@@ -17,7 +17,7 @@ A production-grade, horizontally-scalable commenting system for any application.
 
 ## 🚀 Quick Start
 
-### As a Standalone Service
+### Prerequisites (Required for ALL usage methods)
 
 1. **Set up PostgreSQL database:**
 ```sql
@@ -26,29 +26,39 @@ CREATE USER commentific WITH PASSWORD 'your-password';
 GRANT ALL PRIVILEGES ON DATABASE commentific TO commentific;
 ```
 
-2. **Run database migrations:**
+2. **Install required PostgreSQL extension:**
+```sql
+-- Connect as superuser (postgres) to install extension
+\c commentific
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
+3. **Run database migrations:**
 ```bash
-# Apply the migration
+# Apply the migration to create tables and indexes
 psql -d commentific -f migrations/001_create_comments_table.up.sql
 ```
 
-3. **Set environment variables:**
+### Option 1: As a Standalone Service
+
+4. **Set environment variables:**
 ```bash
 export DATABASE_URL="postgres://commentific:your-password@localhost/commentific?sslmode=disable"
 export PORT="8080"
 export ENVIRONMENT="production"
 ```
 
-4. **Run the service:**
+5. **Run the service:**
 ```bash
 go run cmd/commentific/main.go
 ```
 
-5. **Visit the API documentation:**
+6. **Visit the API documentation:**
 Open http://localhost:8080/ in your browser to see the interactive API documentation.
 
-### As a Go Module
+### Option 2: As a Go Module
 
+4. **Install the module:**
 ```bash
 go get github.com/christopher18/commentific
 ```
@@ -56,6 +66,8 @@ go get github.com/christopher18/commentific
 **Framework Integration:**
 - 🚀 **[Echo Framework](docs/ECHO_INTEGRATION.md)** - Complete integration guide with one-line setup
 - 📝 **Gin Framework** - See integration examples below
+
+5. **Use in your Go application:**
 
 ```go
 package main
@@ -71,8 +83,8 @@ import (
 )
 
 func main() {
-    // Connect to your database
-    db, err := sqlx.Open("postgres", "your-database-url")
+    // Connect to the SAME database where you ran the migrations
+    db, err := sqlx.Connect("postgres", "postgres://commentific:your-password@localhost/commentific?sslmode=disable")
     if err != nil {
         log.Fatal(err)
     }
@@ -99,6 +111,8 @@ func main() {
     log.Printf("Created comment: %+v", comment)
 }
 ```
+
+**Important:** Both usage methods require the same database setup and migrations. The difference is that as a Go module, YOU manage the database connection and HTTP routing.
 
 ## 📖 API Reference
 
@@ -205,6 +219,12 @@ Commentific follows a clean architecture pattern with clear separation of concer
 
 ### Database Configuration
 
+**Required Extension:**
+```sql
+-- Required for text search functionality (must be installed by superuser)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
 For production deployments, consider these PostgreSQL settings:
 
 ```sql
@@ -212,10 +232,9 @@ For production deployments, consider these PostgreSQL settings:
 max_connections = 100
 shared_buffers = 256MB
 effective_cache_size = 1GB
-
--- For better text search performance
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ```
+
+**Note:** If you get an error about `gist_trgm_ops` not existing, you need to install the `pg_trgm` extension as shown above.
 
 ## 🔌 Integration Examples
 
