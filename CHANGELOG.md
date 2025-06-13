@@ -5,14 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 2024-01-XX
+## [2.0.1] - 2025-06-13
+
+### 
+- Changed internal packages to be public to expose REST implementations for use by other apps
+
+## [1.0.1] - 2025-06-13
 
 ### Fixed
-- **Critical**: Fixed module name from `github.com/christopher18/commentific` to `github.com/christopher18/commentific`
+- **Critical**: Fixed module name from `github.com/commentific/commentific` to `github.com/christopher18/commentific` (I'm still new to go modules hehe)
 - Updated all import statements across the entire codebase
 - Ensures proper Go module resolution and pkg.go.dev indexing
 
-## [1.0.0] - 2024-01-XX
+## [1.0.0] - 2025-06-13
 
 ### Added
 - Initial release of Commentific - Production-grade commenting system
