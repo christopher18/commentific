@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/commentific/commentific/internal/models"
-	"github.com/commentific/commentific/internal/repository"
+	"github.com/christopher18/commentific/internal/models"
+	"github.com/christopher18/commentific/internal/repository"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"

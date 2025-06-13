@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/commentific/commentific/internal/models"
-	"github.com/commentific/commentific/internal/repository/postgres"
-	"github.com/commentific/commentific/internal/service"
+	"github.com/christopher18/commentific/internal/models"
+	"github.com/christopher18/commentific/internal/repository/postgres"
+	"github.com/christopher18/commentific/internal/service"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

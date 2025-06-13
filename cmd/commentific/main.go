@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/commentific/commentific/internal/api"
-	"github.com/commentific/commentific/internal/models"
-	"github.com/commentific/commentific/internal/repository/postgres"
-	"github.com/commentific/commentific/internal/service"
+	"github.com/christopher18/commentific/internal/api"
+	"github.com/christopher18/commentific/internal/models"
+	"github.com/christopher18/commentific/internal/repository/postgres"
+	"github.com/christopher18/commentific/internal/service"
 	"github.com/jmoiron/sqlx"
 )
 

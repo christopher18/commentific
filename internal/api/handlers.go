@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/commentific/commentific/internal/models"
-	"github.com/commentific/commentific/internal/service"
+	"github.com/christopher18/commentific/internal/models"
+	"github.com/christopher18/commentific/internal/service"
 	"github.com/gorilla/mux"
 )
 

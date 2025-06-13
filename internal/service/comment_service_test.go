@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/commentific/commentific/internal/models"
-	"github.com/commentific/commentific/internal/repository"
-	"github.com/commentific/commentific/internal/service"
+	"github.com/christopher18/commentific/internal/models"
+	"github.com/christopher18/commentific/internal/repository"
+	"github.com/christopher18/commentific/internal/service"
 )
 
 // MockRepository implements the CommentRepository interface for testing

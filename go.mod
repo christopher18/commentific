@@ -1,4 +1,4 @@
-module github.com/commentific/commentific
+module github.com/christopher18/commentific
 
 go 1.21
 
