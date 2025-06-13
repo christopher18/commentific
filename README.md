@@ -76,9 +76,9 @@ import (
     "context"
     "log"
     
-    "github.com/christopher18/commentific/internal/models"
-    "github.com/christopher18/commentific/internal/repository/postgres"
-    "github.com/christopher18/commentific/internal/service"
+    "github.com/christopher18/commentific/models"
+    "github.com/christopher18/commentific/postgres"
+    "github.com/christopher18/commentific/service"
     "github.com/jmoiron/sqlx"
 )
 
@@ -243,7 +243,7 @@ effective_cache_size = 1GB
 ```go
 import (
     "github.com/gin-gonic/gin"
-    "github.com/christopher18/commentific/internal/service"
+    "github.com/christopher18/commentific/service"
 )
 
 func setupCommentRoutes(r *gin.Engine, commentService *service.CommentService) {
@@ -275,8 +275,8 @@ func setupCommentRoutes(r *gin.Engine, commentService *service.CommentService) {
 ```go
 import (
     "github.com/labstack/echo/v4"
-    "github.com/christopher18/commentific/internal/api"
-    "github.com/christopher18/commentific/internal/service"
+    "github.com/christopher18/commentific/api"
+    "github.com/christopher18/commentific/service"
 )
 
 func main() {

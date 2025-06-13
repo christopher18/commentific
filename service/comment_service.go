@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/christopher18/commentific/internal/models"
-	"github.com/christopher18/commentific/internal/repository"
+	"github.com/christopher18/commentific/models"
+	"github.com/christopher18/commentific/repository"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
