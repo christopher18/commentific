@@ -1,0 +1,548 @@
+{
+  "info": {
+    "name": "Commentific API",
+    "description": "A production-grade, horizontally-scalable commenting system for any application. Commentific provides Reddit-like features including infinite hierarchy threading, voting, media attachments, and comprehensive search capabilities.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "user-123",
+      "type": "string"
+    },
+    {
+      "key": "root_id",
+      "value": "product-456",
+      "type": "string"
+    },
+    {
+      "key": "comment_id",
+      "value": "comment-789",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "Health & Documentation",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comment Operations",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"root_id\": \"{{root_id}}\",\n  \"user_id\": \"{{user_id}}\",\n  \"content\": \"This is a sample comment with some great content!\",\n  \"media_url\": \"https://example.com/image.jpg\",\n  \"link_url\": \"https://example.com/related-article\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Reply Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "user-456",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"root_id\": \"{{root_id}}\",\n  \"parent_id\": \"{{comment_id}}\",\n  \"user_id\": \"user-456\",\n  \"content\": \"This is a reply to the parent comment. Great discussion!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This is an updated comment with new content!\",\n  \"media_url\": \"https://example.com/updated-image.jpg\",\n  \"link_url\": \"https://example.com/updated-link\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment Path",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}/path",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}", "path"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment Children",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}/children?max_depth=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}", "children"],
+              "query": [
+                {
+                  "key": "max_depth",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Voting Operations",
+      "item": [
+        {
+          "name": "Vote Comment (Upvote)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "user-456",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"user-456\",\n  \"vote_type\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}", "vote"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Vote Comment (Downvote)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "user-789",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"user-789\",\n  \"vote_type\": -1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}", "vote"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Vote",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-ID",
+                "value": "user-456",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/comments/{{comment_id}}/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "comments", "{{comment_id}}", "vote"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Root-based Operations",
+      "item": [
+        {
+          "name": "Get Comments by Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/comments?limit=20&offset=0&sort_by=created_at&sort_order=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "comments"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments with Votes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/comments/with-votes?limit=20&sort_by=score&sort_order=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "comments", "with-votes"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "score"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment Tree",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/tree?max_depth=10&sort_by=score",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "tree"],
+              "query": [
+                {
+                  "key": "max_depth",
+                  "value": "10"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "score"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Top Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/top?limit=10&time_range=day",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "top"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "time_range",
+                  "value": "day",
+                  "description": "Options: hour, day, week, month, all"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roots/{{root_id}}/search?q=great product&limit=20&sort_by=score",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roots", "{{root_id}}", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "great product"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "score"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Operations",
+      "item": [
+        {
+          "name": "Get Comments by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{user_id}}/comments?limit=20&offset=0&sort_by=created_at&sort_order=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "{{user_id}}", "comments"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Comment Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{user_id}}/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "{{user_id}}", "count"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set common variables for the collection",
+          "// These can be overridden in individual requests",
+          "if (!pm.environment.get('baseUrl')) {",
+          "    pm.environment.set('baseUrl', 'http://localhost:8080');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test for all requests",
+          "pm.test('Response should be JSON', function () {",
+          "    pm.response.to.have.header('Content-Type');",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "pm.test('Response time is less than 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "// Extract comment ID from successful comment creation",
+          "if (pm.request.url.path.includes('comments') && pm.request.method === 'POST' && pm.response.code === 201) {",
+          "    const responseJson = pm.response.json();",
+          "    if (responseJson.success && responseJson.data && responseJson.data.id) {",
+          "        pm.environment.set('comment_id', responseJson.data.id);",
+          "        console.log('Extracted comment_id:', responseJson.data.id);",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "protocolProfileBehavior": {
+    "disableBodyPruning": false
+  }
+} 
