@@ -53,6 +53,10 @@ Open http://localhost:8080/ in your browser to see the interactive API documenta
 go get github.com/christopher18/commentific
 ```
 
+**Framework Integration:**
+- 🚀 **[Echo Framework](docs/ECHO_INTEGRATION.md)** - Complete integration guide with one-line setup
+- 📝 **Gin Framework** - See integration examples below
+
 ```go
 package main
 
@@ -252,28 +256,39 @@ func setupCommentRoutes(r *gin.Engine, commentService *service.CommentService) {
 ```go
 import (
     "github.com/labstack/echo/v4"
+    "github.com/christopher18/commentific/internal/api"
     "github.com/christopher18/commentific/internal/service"
 )
 
-func createComment(commentService *service.CommentService) echo.HandlerFunc {
+func main() {
+    e := echo.New()
+    
+    // Initialize Commentific
+    commentService := service.NewCommentService(repo)
+    
+    // Option 1: Register all routes automatically
+    commentAdapter := api.NewEchoAdapter(commentService)
+    commentAdapter.RegisterRoutes(e)
+    
+    // Option 2: Use service in your own handlers
+    e.GET("/products/:id/comments", getProductComments(commentService))
+    
+    e.Start(":8080")
+}
+
+func getProductComments(commentService *service.CommentService) echo.HandlerFunc {
     return func(c echo.Context) error {
-        var req models.CreateCommentRequest
-        if err := c.Bind(&req); err != nil {
-            return echo.NewHTTPError(400, err.Error())
-        }
-        
-        // Get user ID from JWT or session
-        req.UserID = c.Get("user_id").(string)
-        
-        comment, err := commentService.CreateComment(c.Request().Context(), &req)
+        productID := c.Param("id")
+        tree, err := commentService.GetCommentTree(c.Request().Context(), productID, 5, "score")
         if err != nil {
             return echo.NewHTTPError(500, err.Error())
         }
-        
-        return c.JSON(201, comment)
+        return c.JSON(200, tree)
     }
 }
 ```
+
+📖 **[Complete Echo Integration Guide](docs/ECHO_INTEGRATION.md)** - Detailed documentation with advanced examples, middleware integration, and best practices.
 
 ## 🧪 Testing
 
