@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/christopher18/commentific/service"
+	"github.com/christopher18/commentific/v2/service"
 	"github.com/gorilla/mux"
 )
 

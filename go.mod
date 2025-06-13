@@ -1,4 +1,4 @@
-module github.com/christopher18/commentific
+module github.com/christopher18/commentific/v2
 
 go 1.23.0
 

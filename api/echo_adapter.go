@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/christopher18/commentific/service"
+	"github.com/christopher18/commentific/v2/service"
 	"github.com/labstack/echo/v4"
 )
 

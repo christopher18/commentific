@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/christopher18/commentific/api"
-	"github.com/christopher18/commentific/postgres"
-	"github.com/christopher18/commentific/service"
+	"github.com/christopher18/commentific/v2/api"
+	"github.com/christopher18/commentific/v2/postgres"
+	"github.com/christopher18/commentific/v2/service"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/christopher18/commentific/models"
+	"github.com/christopher18/commentific/v2/models"
 )
 
 // CommentRepository defines the interface for comment data operations
