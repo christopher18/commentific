@@ -1,6 +1,9 @@
 -- Create extension for UUID generation if not exists
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Create extension for trigram similarity if not exists
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- Create comments table with hierarchical support
 CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
