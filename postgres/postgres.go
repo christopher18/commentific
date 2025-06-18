@@ -425,9 +425,9 @@ func (r *PostgresRepository) CreateVote(ctx context.Context, vote *models.Vote) 
 
 	query := `
 		INSERT INTO votes (id, comment_id, user_id, vote_type, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES ($1::uuid, $2::uuid, $3::varchar, $4::smallint, $5::timestamptz, $6::timestamptz)
 		ON CONFLICT (comment_id, user_id) 
-		DO UPDATE SET vote_type = $3, updated_at = $6`
+		DO UPDATE SET vote_type = $4::smallint, updated_at = $6::timestamptz`
 
 	vote.CreatedAt = time.Now()
 	vote.UpdatedAt = time.Now()

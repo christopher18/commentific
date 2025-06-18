@@ -1,10 +1,10 @@
 package api
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/christopher18/commentific/v2/service"
+	"github.com/gorilla/mux"
 	"github.com/labstack/echo/v4"
 )
 
@@ -208,11 +208,7 @@ func (a *EchoAdapter) HealthCheck(c echo.Context) error {
 // Helper function to add mux-style vars to request context
 // This allows the existing handlers to work with Echo parameters
 func addMuxVars(req *http.Request, vars map[string]string) *http.Request {
-	// This is a simplified approach - in production you might want to use
-	// a more robust method to pass parameters
-	ctx := req.Context()
-	for key, value := range vars {
-		ctx = context.WithValue(ctx, key, value)
-	}
-	return req.WithContext(ctx)
+	// The proper way to make mux.Vars() work is to use mux.SetURLVars()
+	// which was added in mux v1.6.1 specifically for this purpose
+	return mux.SetURLVars(req, vars)
 }

@@ -46,6 +46,11 @@ type Pagination struct {
 	Total  int `json:"total,omitempty"`
 }
 
+// VoteRequest should only contain the vote type
+type VoteRequest struct {
+	VoteType models.VoteType `json:"vote_type" validate:"required,oneof=1 -1"`
+}
+
 // Helper functions
 
 func (h *CommentHandler) sendJSONResponse(w http.ResponseWriter, statusCode int, response interface{}) {
@@ -361,14 +366,11 @@ func (h *CommentHandler) VoteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.VoteRequest
+	var req VoteRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.sendErrorResponse(w, http.StatusBadRequest, "Invalid JSON format")
 		return
 	}
-
-	// Override user ID from auth context
-	req.UserID = userID
 
 	err := h.commentService.VoteComment(r.Context(), commentID, userID, req.VoteType)
 	if err != nil {

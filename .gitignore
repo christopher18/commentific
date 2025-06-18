@@ -72,3 +72,9 @@ config.local.json
 
 # Docker
 .dockerignore 
+
+# Troubleshooting
+temp/
+
+# binary
+commentific
