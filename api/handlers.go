@@ -328,6 +328,11 @@ func (h *CommentHandler) GetCommentsByUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	if userID != h.getUserID(r) {
+		h.sendErrorResponse(w, http.StatusForbidden, "User ID does not match")
+		return
+	}
+
 	filter := h.parseCommentFilter(r)
 	comments, err := h.commentService.GetCommentsByUser(r.Context(), userID, filter)
 	if err != nil {
@@ -544,6 +549,11 @@ func (h *CommentHandler) GetUserCommentCount(w http.ResponseWriter, r *http.Requ
 
 	if userID == "" {
 		h.sendErrorResponse(w, http.StatusBadRequest, "User ID is required")
+		return
+	}
+
+	if userID != h.getUserID(r) {
+		h.sendErrorResponse(w, http.StatusForbidden, "User ID does not match")
 		return
 	}
 
