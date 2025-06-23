@@ -6,6 +6,7 @@ A production-grade, horizontally-scalable commenting system for any application.
 
 - **Infinite Hierarchy Threading** - Nested comments with unlimited depth
 - **Voting System** - Upvote/downvote with automatic score calculation
+- **Edit Tracking** - Comprehensive edit history with original content preservation
 - **Media Support** - Attach images, videos, and links to comments
 - **Search & Filtering** - Full-text search with advanced filtering options
 - **Database Agnostic** - PostgreSQL implementation with extensible interface for other databases
@@ -35,8 +36,9 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 3. **Run database migrations:**
 ```bash
-# Apply the migration to create tables and indexes
+# Apply the migrations to create tables and indexes
 psql -d commentific -f migrations/001_create_comments_table.up.sql
+psql -d commentific -f migrations/002_add_edit_tracking.up.sql
 ```
 
 ### Option 1: As a Standalone Service
@@ -158,6 +160,66 @@ Content-Type: application/json
 ```http
 GET /api/v1/roots/product-123/search?q=searchterm&limit=20
 ```
+
+#### Update Comment
+```http
+PUT /api/v1/comments/{comment-id}
+Content-Type: application/json
+X-User-ID: user-456
+
+{
+  "content": "Updated comment text"
+}
+```
+
+#### Get Edited Comments
+```http
+GET /api/v1/roots/product-123/edited?min_edits=2&sort_by=edit_count
+```
+
+### Edit Tracking
+
+Commentific automatically tracks all comment edits with comprehensive metadata:
+
+#### Edit Information Included
+All comment responses include edit tracking fields:
+```json
+{
+  "id": "comment-uuid",
+  "content": "Updated comment text",
+  "is_edited": true,
+  "edit_count": 3,
+  "original_content": "Original comment text",
+  "content_updated_at": "2024-01-15T14:30:22Z",
+  "created_at": "2024-01-10T10:15:30Z",
+  "updated_at": "2024-01-15T14:30:22Z"
+}
+```
+
+#### Edit Filtering & Querying
+```http
+# Get only edited comments
+GET /api/v1/roots/product-123/comments?is_edited=true
+
+# Get comments with at least 2 edits
+GET /api/v1/roots/product-123/comments?min_edits=2
+
+# Sort by most edited first
+GET /api/v1/roots/product-123/comments?sort_by=edit_count&sort_order=desc
+
+# Sort by most recently edited
+GET /api/v1/roots/product-123/comments?sort_by=content_updated_at&sort_order=desc
+
+# Get dedicated edited comments endpoint
+GET /api/v1/roots/product-123/edited
+```
+
+#### How Edit Tracking Works
+- **Automatic Detection**: Database triggers detect content changes
+- **Original Preservation**: First edit preserves original content
+- **Edit Counting**: Tracks total number of modifications
+- **Smart Triggers**: Only content changes trigger edit tracking (not votes)
+- **Zero Overhead**: No application logic required
 
 ### Response Format
 
