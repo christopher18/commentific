@@ -133,7 +133,8 @@ func (r *PostgresRepository) CreateComment(ctx context.Context, comment *models.
 func (r *PostgresRepository) GetCommentByID(ctx context.Context, id string) (*models.Comment, error) {
 	query := `
 		SELECT id, root_id, parent_id, user_id, content, media_url, link_url, 
-		       upvotes, downvotes, score, depth, path, is_deleted, created_at, updated_at
+		       upvotes, downvotes, score, depth, path, is_deleted, is_edited,
+		       edit_count, original_content, created_at, updated_at, content_updated_at
 		FROM comments 
 		WHERE id = $1 AND NOT is_deleted`
 
@@ -227,7 +228,8 @@ func (r *PostgresRepository) DeleteComment(ctx context.Context, id string, userI
 func (r *PostgresRepository) GetComments(ctx context.Context, filter *models.CommentFilter) ([]*models.Comment, error) {
 	query := `
 		SELECT id, root_id, parent_id, user_id, content, media_url, link_url,
-		       upvotes, downvotes, score, depth, path, is_deleted, created_at, updated_at
+		       upvotes, downvotes, score, depth, path, is_deleted, is_edited,
+		       edit_count, original_content, created_at, updated_at, content_updated_at
 		FROM comments 
 		WHERE NOT is_deleted`
 
@@ -258,11 +260,29 @@ func (r *PostgresRepository) GetComments(ctx context.Context, filter *models.Com
 		argIndex++
 	}
 
+	if filter.IsEdited != nil {
+		query += fmt.Sprintf(" AND is_edited = $%d", argIndex)
+		args = append(args, *filter.IsEdited)
+		argIndex++
+	}
+
+	if filter.MinEdits != nil {
+		query += fmt.Sprintf(" AND edit_count >= $%d", argIndex)
+		args = append(args, *filter.MinEdits)
+		argIndex++
+	}
+
+	if filter.MaxEdits != nil {
+		query += fmt.Sprintf(" AND edit_count <= $%d", argIndex)
+		args = append(args, *filter.MaxEdits)
+		argIndex++
+	}
+
 	// Add sorting
 	sortBy := "created_at"
 	if filter.SortBy != "" {
 		switch filter.SortBy {
-		case "score", "created_at", "updated_at":
+		case "score", "created_at", "updated_at", "content_updated_at", "edit_count":
 			sortBy = filter.SortBy
 		}
 	}
@@ -318,7 +338,8 @@ func (r *PostgresRepository) GetCommentsByUserID(ctx context.Context, userID str
 func (r *PostgresRepository) GetCommentChildren(ctx context.Context, parentID string, maxDepth int) ([]*models.Comment, error) {
 	query := `
 		SELECT id, root_id, parent_id, user_id, content, media_url, link_url,
-		       upvotes, downvotes, score, depth, path, is_deleted, created_at, updated_at
+		       upvotes, downvotes, score, depth, path, is_deleted, is_edited,
+		       edit_count, original_content, created_at, updated_at, content_updated_at
 		FROM comments 
 		WHERE path LIKE $1 AND NOT is_deleted AND depth <= $2
 		ORDER BY path, created_at`
@@ -403,7 +424,8 @@ func (r *PostgresRepository) GetCommentPath(ctx context.Context, commentID strin
 
 	query := `
 		SELECT id, root_id, parent_id, user_id, content, media_url, link_url,
-		       upvotes, downvotes, score, depth, path, is_deleted, created_at, updated_at
+		       upvotes, downvotes, score, depth, path, is_deleted, is_edited,
+		       edit_count, original_content, created_at, updated_at, content_updated_at
 		FROM comments 
 		WHERE id = ANY($1) AND NOT is_deleted
 		ORDER BY depth`
@@ -504,7 +526,8 @@ func (r *PostgresRepository) GetCommentVotes(ctx context.Context, commentID stri
 func (r *PostgresRepository) GetCommentsWithUserVotes(ctx context.Context, rootID, userID string, filter *models.CommentFilter) ([]*models.Comment, map[string]*models.Vote, error) {
 	query := `
 		SELECT c.id, c.root_id, c.parent_id, c.user_id, c.content, c.media_url, c.link_url,
-		       c.upvotes, c.downvotes, c.score, c.depth, c.path, c.is_deleted, c.created_at, c.updated_at,
+		       c.upvotes, c.downvotes, c.score, c.depth, c.path, c.is_deleted, c.is_edited,
+		       c.edit_count, c.original_content, c.created_at, c.updated_at, c.content_updated_at,
 		       v.id as vote_id, v.vote_type
 		FROM comments c
 		LEFT JOIN votes v ON c.id = v.comment_id AND v.user_id = $2
@@ -568,8 +591,8 @@ func (r *PostgresRepository) GetCommentsWithUserVotes(ctx context.Context, rootI
 			&comment.ID, &comment.RootID, &comment.ParentID, &comment.UserID,
 			&comment.Content, &comment.MediaURL, &comment.LinkURL,
 			&comment.Upvotes, &comment.Downvotes, &comment.Score,
-			&comment.Depth, &comment.Path, &comment.IsDeleted,
-			&comment.CreatedAt, &comment.UpdatedAt,
+			&comment.Depth, &comment.Path, &comment.IsDeleted, &comment.IsEdited,
+			&comment.EditCount, &comment.OriginalContent, &comment.CreatedAt, &comment.UpdatedAt, &comment.ContentUpdatedAt,
 			&voteID, &voteType,
 		)
 		if err != nil {
@@ -620,22 +643,33 @@ func (r *PostgresRepository) UpdateCommentScores(ctx context.Context, commentIDs
 	return nil
 }
 
-// GetCommentStats retrieves statistics for a root
+// GetCommentStats retrieves enhanced statistics for a root including edit tracking
 func (r *PostgresRepository) GetCommentStats(ctx context.Context, rootID string) (*models.CommentStats, error) {
 	query := `
 		SELECT 
 			COUNT(*) as total_count,
 			COALESCE(SUM(score), 0) as total_score,
 			COALESCE(MAX(depth), 0) as max_depth,
-			COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END) as recent_count
+			COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END) as recent_count,
+			COUNT(CASE WHEN is_edited = true THEN 1 END) as edited_count,
+			COALESCE(SUM(edit_count), 0) as total_edits
 		FROM comments 
 		WHERE root_id = $1 AND NOT is_deleted`
 
 	stats := &models.CommentStats{RootID: rootID}
 	err := r.getQueryable().QueryRowxContext(ctx, query, rootID).Scan(
-		&stats.TotalCount, &stats.TotalScore, &stats.MaxDepth, &stats.RecentCount)
+		&stats.TotalCount, &stats.TotalScore, &stats.MaxDepth, &stats.RecentCount,
+		&stats.EditedCount, &stats.TotalEdits)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get comment stats: %w", err)
+	}
+
+	// Calculate derived statistics
+	if stats.TotalCount > 0 {
+		stats.EditRate = float64(stats.EditedCount) / float64(stats.TotalCount) * 100
+	}
+	if stats.EditedCount > 0 {
+		stats.AvgEditsPerComment = float64(stats.TotalEdits) / float64(stats.EditedCount)
 	}
 
 	return stats, nil
@@ -672,7 +706,8 @@ func (r *PostgresRepository) GetTopComments(ctx context.Context, rootID string, 
 
 	query := fmt.Sprintf(`
 		SELECT id, root_id, parent_id, user_id, content, media_url, link_url,
-		       upvotes, downvotes, score, depth, path, is_deleted, created_at, updated_at
+		       upvotes, downvotes, score, depth, path, is_deleted, is_edited,
+		       edit_count, original_content, created_at, updated_at, content_updated_at
 		FROM comments 
 		WHERE root_id = $1 AND NOT is_deleted %s
 		ORDER BY score DESC, created_at DESC

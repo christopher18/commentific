@@ -120,6 +120,24 @@ func (h *CommentHandler) parseCommentFilter(r *http.Request) *models.CommentFilt
 		filter.ParentID = &parentID
 	}
 
+	if isEdited := r.URL.Query().Get("is_edited"); isEdited != "" {
+		if edited, err := strconv.ParseBool(isEdited); err == nil {
+			filter.IsEdited = &edited
+		}
+	}
+
+	if minEdits := r.URL.Query().Get("min_edits"); minEdits != "" {
+		if min, err := strconv.Atoi(minEdits); err == nil {
+			filter.MinEdits = &min
+		}
+	}
+
+	if maxEdits := r.URL.Query().Get("max_edits"); maxEdits != "" {
+		if max, err := strconv.Atoi(maxEdits); err == nil {
+			filter.MaxEdits = &max
+		}
+	}
+
 	return filter
 }
 
@@ -621,4 +639,40 @@ func (h *CommentHandler) GetCommentChildren(w http.ResponseWriter, r *http.Reque
 	}
 
 	h.sendSuccessResponse(w, children)
+}
+
+// GetEditedComments handles GET /roots/{root_id}/edited - gets comments that have been edited
+func (h *CommentHandler) GetEditedComments(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rootID := vars["root_id"]
+
+	if rootID == "" {
+		h.sendErrorResponse(w, http.StatusBadRequest, "Root ID is required")
+		return
+	}
+
+	filter := h.parseCommentFilter(r)
+	// Force filter to only show edited comments
+	isEdited := true
+	filter.IsEdited = &isEdited
+
+	comments, err := h.commentService.GetCommentsByRoot(r.Context(), rootID, filter)
+	if err != nil {
+		h.sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := PaginatedResponse{
+		Success: true,
+		Data:    comments,
+	}
+
+	if filter.Limit != nil && filter.Offset != nil {
+		response.Pagination = &Pagination{
+			Limit:  *filter.Limit,
+			Offset: *filter.Offset,
+		}
+	}
+
+	h.sendJSONResponse(w, http.StatusOK, response)
 }

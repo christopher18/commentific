@@ -1,8 +1,8 @@
 -- Create extension for UUID generation if not exists
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create extension for trigram similarity if not exists
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- Create extension for trigram matching (required for gist_trgm_ops)
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- Create comments table with hierarchical support
 CREATE TABLE comments (
@@ -139,4 +139,4 @@ CREATE TRIGGER trigger_comments_updated_at
 CREATE TRIGGER trigger_votes_updated_at
     BEFORE UPDATE ON votes
     FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column(); 
+    EXECUTE FUNCTION update_updated_at_column();

@@ -42,6 +42,7 @@ func NewRouter(commentService *service.CommentService) *mux.Router {
 	api.HandleFunc("/roots/{root_id}/stats", handler.GetCommentStats).Methods("GET")
 	api.HandleFunc("/roots/{root_id}/top", handler.GetTopComments).Methods("GET")
 	api.HandleFunc("/roots/{root_id}/search", handler.SearchComments).Methods("GET")
+	api.HandleFunc("/roots/{root_id}/edited", handler.GetEditedComments).Methods("GET")
 
 	// User operations
 	api.HandleFunc("/users/{user_id}/comments", handler.GetCommentsByUser).Methods("GET")
@@ -170,7 +171,8 @@ func apiDocumentationHandler(w http.ResponseWriter, r *http.Request) {
     
     <div class="endpoint">
         <span class="method">GET</span> <span class="path">/api/v1/comments/{id}</span><br>
-        Get a specific comment
+        Get a specific comment<br>
+        <small>Response includes edit tracking: <code>is_edited</code>, <code>edit_count</code>, <code>original_content</code>, and <code>content_updated_at</code></small>
     </div>
     
     <div class="endpoint">
@@ -228,6 +230,12 @@ func apiDocumentationHandler(w http.ResponseWriter, r *http.Request) {
         Search comments within a root
     </div>
     
+    <div class="endpoint">
+        <span class="method">GET</span> <span class="path">/api/v1/roots/{root_id}/edited</span><br>
+        Get only edited comments for a root<br>
+        <small>Query params: <code>min_edits</code>, <code>max_edits</code>, <code>sort_by=edit_count|content_updated_at</code></small>
+    </div>
+    
     <h2>User Operations</h2>
     
     <div class="endpoint">
@@ -245,9 +253,12 @@ func apiDocumentationHandler(w http.ResponseWriter, r *http.Request) {
     <ul>
         <li><code>limit</code> - Number of results (default: 50, max: 1000)</li>
         <li><code>offset</code> - Pagination offset</li>
-        <li><code>sort_by</code> - Sort field (score, created_at, updated_at)</li>
+        <li><code>sort_by</code> - Sort field (score, created_at, updated_at, content_updated_at, edit_count)</li>
         <li><code>sort_order</code> - Sort direction (asc, desc)</li>
         <li><code>max_depth</code> - Maximum comment depth for tree operations</li>
+        <li><code>is_edited</code> - Filter by edit status (true/false)</li>
+        <li><code>min_edits</code> - Minimum number of edits</li>
+        <li><code>max_edits</code> - Maximum number of edits</li>
     </ul>
     
     <h2>Health Check</h2>
